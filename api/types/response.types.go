@@ -1,5 +1,7 @@
 package types
 
+import db "investify/db/sqlc"
+
 type BaseHttpResponse struct {
 	Status     string      `json:"status"`
 	Data       interface{} `json:"data"`
@@ -30,4 +32,10 @@ func GenerateErrorResponse(err error, statusCode int, extra string) *BaseErrorRe
 		Message:    err.Error(),
 		Extra:      extra,
 	}
+}
+
+type CreateUserResponse struct {
+	UserInfo    db.BkUser    `json:"user_info"`
+	AddressInfo db.BkAddress `json:"address_info"`
+	ProfileInfo interface{}  `json:"profile_info"`
 }

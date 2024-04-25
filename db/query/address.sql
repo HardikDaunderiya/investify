@@ -1,4 +1,4 @@
--- name: Createaddress :one
+-- name: CreateAddress :one
 INSERT INTO
     bk_address (
         address_street,

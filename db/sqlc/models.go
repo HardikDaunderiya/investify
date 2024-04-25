@@ -34,6 +34,16 @@ type BkBusiness struct {
 	DeletedAt              pgtype.Timestamp `json:"deleted_at"`
 }
 
+type BkInvestor struct {
+	InvestorID        int64            `json:"investor_id"`
+	InvestorName      pgtype.Text      `json:"investor_name"`
+	InvestorUserID    int64            `json:"investor_user_id"`
+	InvestorAddressID int64            `json:"investor_address_id"`
+	CreatedAt         pgtype.Timestamp `json:"created_at"`
+	UpdatedAt         pgtype.Timestamp `json:"updated_at"`
+	DeletedAt         pgtype.Timestamp `json:"deleted_at"`
+}
+
 type BkOwner struct {
 	OwnerID        int64            `json:"owner_id"`
 	OwnerName      pgtype.Text      `json:"owner_name"`

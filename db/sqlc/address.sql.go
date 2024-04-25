@@ -11,7 +11,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const createaddress = `-- name: Createaddress :one
+const createAddress = `-- name: CreateAddress :one
 INSERT INTO
     bk_address (
         address_street,
@@ -24,7 +24,7 @@ VALUES
     ($1, $2, $3, $4, $5) RETURNING address_id, address_street, address_city, address_state, address_country, address_zipcode
 `
 
-type CreateaddressParams struct {
+type CreateAddressParams struct {
 	AddressStreet  string      `json:"address_street"`
 	AddressCity    string      `json:"address_city"`
 	AddressState   string      `json:"address_state"`
@@ -32,8 +32,8 @@ type CreateaddressParams struct {
 	AddressZipcode string      `json:"address_zipcode"`
 }
 
-func (q *Queries) Createaddress(ctx context.Context, arg CreateaddressParams) (BkAddress, error) {
-	row := q.db.QueryRow(ctx, createaddress,
+func (q *Queries) CreateAddress(ctx context.Context, arg CreateAddressParams) (BkAddress, error) {
+	row := q.db.QueryRow(ctx, createAddress,
 		arg.AddressStreet,
 		arg.AddressCity,
 		arg.AddressState,

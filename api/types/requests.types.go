@@ -1,6 +1,7 @@
 package types
 
 type CreateUserRequest struct {
-	UserDetails   UserType
-	AdressDetails AddressType
+	ProfileDetails ProfileInfo
+	UserDetails    UserType
+	AdressDetails  AddressType
 }

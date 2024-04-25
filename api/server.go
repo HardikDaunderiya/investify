@@ -10,7 +10,8 @@ import (
 )
 
 type Server struct {
-	store  db.Store
+	store db.Store
+	// store  *db.SQLStore
 	router *gin.Engine
 }
 

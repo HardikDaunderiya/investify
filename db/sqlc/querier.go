@@ -9,8 +9,10 @@ import (
 )
 
 type Querier interface {
+	CreateAddress(ctx context.Context, arg CreateAddressParams) (BkAddress, error)
+	CreateInvestor(ctx context.Context, arg CreateInvestorParams) (BkInvestor, error)
+	CreateOwner(ctx context.Context, arg CreateOwnerParams) (BkOwner, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (BkUser, error)
-	Createaddress(ctx context.Context, arg CreateaddressParams) (BkAddress, error)
 }
 
 var _ Querier = (*Queries)(nil)

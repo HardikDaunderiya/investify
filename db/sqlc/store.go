@@ -14,6 +14,7 @@ import (
 
 type Store interface {
 	Querier
+	ExecTx(ctx context.Context, fn func(*Queries) error) error
 }
 
 // SQLStore provides all functions to execute SQL queries and transactions
@@ -22,6 +23,8 @@ type SQLStore struct {
 	*Queries
 }
 
+var _ Store = &SQLStore{}
+
 // NewStore creates a new store
 func NewStore(connPool *pgxpool.Pool) Store {
 	return &SQLStore{
@@ -29,7 +32,8 @@ func NewStore(connPool *pgxpool.Pool) Store {
 		Queries:  New(connPool),
 	}
 }
-func (store *SQLStore) execTx(ctx context.Context, fn func(*Queries) error) error {
+
+func (store *SQLStore) ExecTx(ctx context.Context, fn func(*Queries) error) error {
 	tx, err := store.connPool.Begin(ctx)
 	if err != nil {
 		return err
