@@ -14,10 +14,10 @@ import (
 
 type UserController struct {
 	store   db.Store
-	userSrv *services.UserServiceImpl
+	userSrv services.UserService
 }
 
-func NewUserController(store db.Store, userSrv *services.UserServiceImpl) *UserController {
+func NewUserController(store db.Store, userSrv services.UserService) *UserController {
 	return &UserController{store: store, userSrv: userSrv}
 }
 
@@ -54,4 +54,21 @@ func (u *UserController) CreateUser(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, types.GenerateResponse(respObject, http.StatusOK))
 
+}
+
+func (u *UserController) LoginUser(ctx *gin.Context) {
+	var req types.LoginUserRequest
+	err := ctx.ShouldBindJSON(&req)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, types.GenerateErrorResponse(err, http.StatusBadRequest, "position 1"))
+		return
+	}
+
+	respObject, err := u.userSrv.LoginUserService(ctx, req) // Delegate creation logic to user service
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, types.GenerateErrorResponse(err, http.StatusInternalServerError, "position 3"))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, types.GenerateResponse(respObject, http.StatusOK))
 }

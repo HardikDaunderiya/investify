@@ -15,6 +15,10 @@ func SetupRouter(server *Server) *gin.Engine {
 
 	// router.POST("/test", Test)
 
+	//create a owner service
+	//create a investor service
+	//create a restaurant service
+
 	v1 := router.Group("/api/v1")
 	{
 		// Log statement for debugging
@@ -22,8 +26,15 @@ func SetupRouter(server *Server) *gin.Engine {
 
 		//Services
 		userService := services.NewUserService(server.store)
+		ownerService := services.NewOwnerService(server.store)
+		investorService := services.NewOwnerService(server.store)
+		businessService := services.NewOwnerService(server.store)
+
 		// Controllers
 		userController := controller.NewUserController(server.store, userService)
+		ownerController := controller.NewOwnerController(server.store, ownerService)
+		investorController := controller.NewInvestorController(server.store, investorService)
+		businessController := controller.NewBusinessController(server.store, businessService)
 
 		// Define routes for users
 		users := v1.Group("/users")
@@ -32,8 +43,22 @@ func SetupRouter(server *Server) *gin.Engine {
 			log.Println("Setting up user routes...")
 
 			users.POST("/signup", userController.CreateUser)
+			users.POST("/login", userController.LoginUser)
 			users.GET("/test", userController.Test)
 		}
+		owner := v1.Group("/owner")
+		{
+
+		}
+		investor := v1.Group("/investor")
+		{
+
+		}
+		business := v1.Group("/business")
+		{
+
+		}
+
 	}
 
 	// Log statement for debugging

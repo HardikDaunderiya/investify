@@ -12,7 +12,10 @@ type Querier interface {
 	CreateAddress(ctx context.Context, arg CreateAddressParams) (BkAddress, error)
 	CreateInvestor(ctx context.Context, arg CreateInvestorParams) (BkInvestor, error)
 	CreateOwner(ctx context.Context, arg CreateOwnerParams) (BkOwner, error)
+	CreateToken(ctx context.Context, arg CreateTokenParams) (BkToken, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (BkUser, error)
+	GetUserByEmail(ctx context.Context, userEmail string) (BkUser, error)
+	GetUserById(ctx context.Context, userID int64) (BkUser, error)
 }
 
 var _ Querier = (*Queries)(nil)

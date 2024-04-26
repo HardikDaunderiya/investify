@@ -5,6 +5,7 @@
 package db
 
 import (
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -60,10 +61,10 @@ type BkRole struct {
 }
 
 type BkToken struct {
-	TokenID         int64       `json:"token_id"`
-	TokenValue      string      `json:"token_value"`
-	TokenUserID     int64       `json:"token_user_id"`
-	TokenExpiryDate pgtype.Date `json:"token_expiry_date"`
+	TokenID         int64              `json:"token_id"`
+	TokenValue      uuid.UUID          `json:"token_value"`
+	TokenUserID     int64              `json:"token_user_id"`
+	TokenExpiryDate pgtype.Timestamptz `json:"token_expiry_date"`
 }
 
 type BkUser struct {

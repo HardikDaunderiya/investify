@@ -39,3 +39,7 @@ type CreateUserResponse struct {
 	AddressInfo db.BkAddress `json:"address_info"`
 	ProfileInfo interface{}  `json:"profile_info"`
 }
+type LoginUserResponse struct {
+	AccessToken  string `json:"access_token`
+	RefreshToken string `json:"refresh_token`
+}

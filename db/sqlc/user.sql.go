@@ -54,3 +54,47 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (BkUser,
 	)
 	return i, err
 }
+
+const getUserByEmail = `-- name: GetUserByEmail :one
+SELECT
+    user_id, user_email, user_phone_number, user_password, users_role_id, users_photo_link, created_at, updated_at, deleted_at FROM bk_users where user_email = $1 LIMIT 1
+`
+
+func (q *Queries) GetUserByEmail(ctx context.Context, userEmail string) (BkUser, error) {
+	row := q.db.QueryRow(ctx, getUserByEmail, userEmail)
+	var i BkUser
+	err := row.Scan(
+		&i.UserID,
+		&i.UserEmail,
+		&i.UserPhoneNumber,
+		&i.UserPassword,
+		&i.UsersRoleID,
+		&i.UsersPhotoLink,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
+}
+
+const getUserById = `-- name: GetUserById :one
+SELECT
+    user_id, user_email, user_phone_number, user_password, users_role_id, users_photo_link, created_at, updated_at, deleted_at FROM bk_users where user_id = $1 LIMIT 1
+`
+
+func (q *Queries) GetUserById(ctx context.Context, userID int64) (BkUser, error) {
+	row := q.db.QueryRow(ctx, getUserById, userID)
+	var i BkUser
+	err := row.Scan(
+		&i.UserID,
+		&i.UserEmail,
+		&i.UserPhoneNumber,
+		&i.UserPassword,
+		&i.UsersRoleID,
+		&i.UsersPhotoLink,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
+}

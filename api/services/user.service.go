@@ -6,11 +6,16 @@ import (
 
 	"investify/api/types"
 
+	"time"
+
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type UserService interface {
-	CreateUser(ctx *gin.Context, req types.CreateUserRequest) (types.CreateUserResponse, error)
+	CreateUserService(ctx *gin.Context, req types.CreateUserRequest) (types.CreateUserResponse, error)
+	LoginUserService(ctx *gin.Context, req types.LoginUserRequest) (types.LoginUserResponse, error)
 }
 
 type UserServiceImpl struct {
@@ -85,5 +90,40 @@ func (u *UserServiceImpl) CreateUserService(ctx *gin.Context, req types.CreateUs
 
 	// Return success response
 	return respObject, nil
+}
 
+func (u *UserServiceImpl) LoginUserService(ctx *gin.Context, req types.LoginUserRequest) (types.LoginUserResponse, error) {
+	// Implement the logic here
+	//check user
+	//verify password
+
+	var LoginUserResponse types.LoginUserResponse
+
+	user, err := u.store.GetUserByEmail(ctx, req.UserEmail)
+	if err != nil {
+		return types.LoginUserResponse{}, err
+	}
+
+	err = util.CheckPassword(req.UserPassword, user.UserPassword)
+	if err != nil {
+		return types.LoginUserResponse{}, err
+	}
+
+	token, err := util.GenerateJWT(user)
+	if err != nil {
+		return types.LoginUserResponse{}, err
+
+	}
+	LoginUserResponse.AccessToken = token
+	uuidToken := uuid.New()
+	refreshToken, err := u.store.CreateToken(ctx, db.CreateTokenParams{
+		TokenValue:      uuidToken,
+		TokenUserID:     user.UserID,
+		TokenExpiryDate: pgtype.Timestamptz{Time: time.Now().Add(7 * 24 * time.Hour)},
+	})
+	LoginUserResponse.RefreshToken = refreshToken.TokenValue.String()
+	if err != nil {
+		return types.LoginUserResponse{}, err
+	}
+	return LoginUserResponse, nil
 }

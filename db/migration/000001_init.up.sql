@@ -22,18 +22,22 @@ CREATE TABLE
 CREATE TABLE
     "bk_tokens" (
         "token_id" BIGSERIAL PRIMARY KEY,
-        "token_value" VARCHAR NOT NULL,
+        "token_value" UUID NOT NULL,
         "token_user_id" BIGINT NOT NULL REFERENCES "bk_users" ("user_id"),
-        "token_expiry_date" DATE
+        "token_expiry_date" TIMESTAMP
+        WITH
+            TIME ZONE
     );
 
 CREATE UNIQUE INDEX "user_email_index" ON "bk_users" ("user_email");
+
+CREATE UNIQUE INDEX "token_value_index" ON "bk_tokens" ("token_value");
 
 CREATE UNIQUE INDEX "user_phone_number_index" ON "bk_users" ("user_phone_number");
 
 INSERT INTO
     bk_role (role_name)
 VALUES
-    ('business'),
+    ('owner'),
     ('investor'),
     ('admin');
