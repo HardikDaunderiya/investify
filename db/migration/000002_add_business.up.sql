@@ -28,10 +28,9 @@ CREATE TABLE
         "business_email" VARCHAR NOT NULL,
         "business_contact" VARCHAR NOT NULL,
         "business_name" VARCHAR NOT NULL,
-        "business_address_id" BIGINT,
-        "business_user_id" BIGINT,
+        "business_address_id" BIGINT NOT NULL,
         "business_ratings" NUMERIC,
-        "business_minAmount" NUMERIC,
+        "business_minamount" NUMERIC,
         "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         "updated_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         "deleted_at" TIMESTAMP

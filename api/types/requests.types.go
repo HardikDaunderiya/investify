@@ -10,3 +10,7 @@ type LoginUserRequest struct {
 	UserEmail    string `json:"user_email"`
 	UserPassword string `json:"user_password"`
 }
+type CreateBusinessRequest struct {
+	BusinessDetails BusinessType
+	AdressDetails   AddressType
+}

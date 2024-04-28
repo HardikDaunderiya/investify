@@ -7,3 +7,16 @@ INSERT INTO
     )
 VALUES
     ($1, $2, $3) RETURNING *;
+
+
+-- name: GetInvestorByUserId :one
+SELECT
+    * FROM bk_investor where investor_user_id = $1;
+
+-- name: GetInvestorById :one
+SELECT
+    * FROM bk_investor where investor_id = $1;
+
+-- name: GetInvestorFeed :many
+SELECT
+    * FROM bk_investor LIMIT 10;

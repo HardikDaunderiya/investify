@@ -3,10 +3,9 @@ package services
 import (
 	db "investify/db/sqlc"
 	"investify/util"
+	"time"
 
 	"investify/api/types"
-
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -22,7 +21,7 @@ type UserServiceImpl struct {
 	store db.Store
 }
 
-func NewUserService(store db.Store) *UserServiceImpl {
+func NewUserService(store db.Store) UserService {
 	return &UserServiceImpl{store: store}
 }
 
@@ -36,7 +35,7 @@ func (u *UserServiceImpl) CreateUserService(ctx *gin.Context, req types.CreateUs
 	var respObject types.CreateUserResponse
 
 	err = u.store.ExecTx(ctx, func(tx *db.Queries) error {
-		address, err := u.store.CreateAddress(ctx, db.CreateAddressParams{
+		address, err := tx.CreateAddress(ctx, db.CreateAddressParams{
 			AddressStreet:  req.AdressDetails.AddressStreet,
 			AddressCity:    req.AdressDetails.AddressCity,
 			AddressState:   req.AdressDetails.AddressState,
@@ -46,9 +45,7 @@ func (u *UserServiceImpl) CreateUserService(ctx *gin.Context, req types.CreateUs
 		if err != nil {
 			return err
 		}
-		respObject.AddressInfo = address
-
-		user, err := u.store.CreateUser(ctx, db.CreateUserParams{
+		user, err := tx.CreateUser(ctx, db.CreateUserParams{
 			UserEmail:    req.UserDetails.UserEmail,
 			UserPassword: hashedPassword,
 			UsersRoleID:  req.UserDetails.UserRoleID,
@@ -56,10 +53,9 @@ func (u *UserServiceImpl) CreateUserService(ctx *gin.Context, req types.CreateUs
 		if err != nil {
 			return err
 		}
-		respObject.UserInfo = user
 
 		if user.UsersRoleID == 1 {
-			owner, err := u.store.CreateOwner(ctx, db.CreateOwnerParams{
+			owner, err := tx.CreateOwner(ctx, db.CreateOwnerParams{
 				OwnerName:      req.ProfileDetails.ProfileName,
 				OwnerAddressID: address.AddressID,
 				OwnerUserID:    user.UserID,
@@ -70,7 +66,7 @@ func (u *UserServiceImpl) CreateUserService(ctx *gin.Context, req types.CreateUs
 			respObject.ProfileInfo = owner
 
 		} else if user.UsersRoleID == 2 {
-			investor, err := u.store.CreateInvestor(ctx, db.CreateInvestorParams{
+			investor, err := tx.CreateInvestor(ctx, db.CreateInvestorParams{
 				InvestorName:      req.ProfileDetails.ProfileName,
 				InvestorAddressID: address.AddressID,
 				InvestorUserID:    user.UserID,
@@ -80,8 +76,11 @@ func (u *UserServiceImpl) CreateUserService(ctx *gin.Context, req types.CreateUs
 			}
 			respObject.ProfileInfo = investor
 		}
+		respObject.UserInfo = user
+		respObject.AddressInfo = address
 
 		return nil // Commit transaction
+
 	})
 
 	if err != nil {
@@ -93,9 +92,12 @@ func (u *UserServiceImpl) CreateUserService(ctx *gin.Context, req types.CreateUs
 }
 
 func (u *UserServiceImpl) LoginUserService(ctx *gin.Context, req types.LoginUserRequest) (types.LoginUserResponse, error) {
-	// Implement the logic here
 	//check user
 	//verify password
+	//generate jwt token
+	//generate refresh token
+	//store refresh token in db
+	//return jwt token and refresh token
 
 	var LoginUserResponse types.LoginUserResponse
 
@@ -116,14 +118,16 @@ func (u *UserServiceImpl) LoginUserService(ctx *gin.Context, req types.LoginUser
 	}
 	LoginUserResponse.AccessToken = token
 	uuidToken := uuid.New()
+
 	refreshToken, err := u.store.CreateToken(ctx, db.CreateTokenParams{
 		TokenValue:      uuidToken,
 		TokenUserID:     user.UserID,
-		TokenExpiryDate: pgtype.Timestamptz{Time: time.Now().Add(7 * 24 * time.Hour)},
+		TokenExpiryDate: pgtype.Timestamptz{Time: time.Now().Add(7 * 24 * time.Hour), Valid: true},
 	})
-	LoginUserResponse.RefreshToken = refreshToken.TokenValue.String()
+
 	if err != nil {
 		return types.LoginUserResponse{}, err
 	}
+	LoginUserResponse.RefreshToken = refreshToken.TokenValue.String()
 	return LoginUserResponse, nil
 }

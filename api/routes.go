@@ -2,6 +2,7 @@ package api
 
 import (
 	"investify/api/controller"
+	"investify/api/middleware"
 	"investify/api/services"
 	"log"
 
@@ -26,13 +27,13 @@ func SetupRouter(server *Server) *gin.Engine {
 
 		//Services
 		userService := services.NewUserService(server.store)
-		ownerService := services.NewOwnerService(server.store)
-		investorService := services.NewOwnerService(server.store)
-		businessService := services.NewOwnerService(server.store)
+		// ownerService := services.NewOwnerService(server.store)
+		investorService := services.NewInvestorService(server.store)
+		businessService := services.NewBusinessService(server.store)
 
 		// Controllers
 		userController := controller.NewUserController(server.store, userService)
-		ownerController := controller.NewOwnerController(server.store, ownerService)
+		// ownerController := controller.NewOwnerController(server.store, ownerService)
 		investorController := controller.NewInvestorController(server.store, investorService)
 		businessController := controller.NewBusinessController(server.store, businessService)
 
@@ -46,16 +47,24 @@ func SetupRouter(server *Server) *gin.Engine {
 			users.POST("/login", userController.LoginUser)
 			users.GET("/test", userController.Test)
 		}
-		owner := v1.Group("/owner")
-		{
+		// owner := v1.Group("/owner")
+		// {
 
-		}
+		// }
 		investor := v1.Group("/investor")
 		{
+			investor.Use(middleware.JWTAuthInvestor())
+			investor.GET("/feed", investorController.GetBusinessFeedController)
+			investor.GET("/:id", investorController.GetInvestorByIdController)
 
 		}
 		business := v1.Group("/business")
 		{
+			business.Use(middleware.JWTOwnerAuth())
+			business.POST("/createBusiness", businessController.CreateBusiness)
+			business.GET("/:id", businessController.GetBusinessByIdController)
+			business.GET("/owner", businessController.GetBusinessByOwnerController)
+			business.GET("/feed", businessController.GetInvestorFeedController)
 
 		}
 

@@ -42,3 +42,23 @@ func (q *Queries) CreateOwner(ctx context.Context, arg CreateOwnerParams) (BkOwn
 	)
 	return i, err
 }
+
+const getOwnerByUserId = `-- name: GetOwnerByUserId :one
+SELECT
+    owner_id, owner_name, owner_user_id, owner_address_id, created_at, updated_at, deleted_at FROM bk_owner where owner_user_id = $1 LIMIT 1
+`
+
+func (q *Queries) GetOwnerByUserId(ctx context.Context, ownerUserID int64) (BkOwner, error) {
+	row := q.db.QueryRow(ctx, getOwnerByUserId, ownerUserID)
+	var i BkOwner
+	err := row.Scan(
+		&i.OwnerID,
+		&i.OwnerName,
+		&i.OwnerUserID,
+		&i.OwnerAddressID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
+}

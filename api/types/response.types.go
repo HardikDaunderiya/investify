@@ -43,3 +43,21 @@ type LoginUserResponse struct {
 	AccessToken  string `json:"access_token`
 	RefreshToken string `json:"refresh_token`
 }
+
+type CreateBusinessResponse struct {
+	BusinessInfo db.BkBusiness `json:"business_info"`
+	AddressInfo  db.BkAddress  `json:"address_info"`
+}
+
+type GetBusinessResponse struct {
+	BusinessInfo db.BkBusiness `json:"business_info"`
+}
+type GetBusinessFeedResponse struct {
+	BusinessInfo []db.BkBusiness `json:"business_info"`
+}
+type GetInvestorResponse struct {
+	InvestorInfo db.BkInvestor `json:"investor_info"`
+}
+type GetInvestorFeedResponse struct {
+	InvestorInfo []db.BkInvestor `json:"investor_info"`
+}

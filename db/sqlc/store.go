@@ -4,7 +4,6 @@ import (
 	// "context"
 
 	"context"
-	"fmt"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -39,14 +38,18 @@ func (store *SQLStore) ExecTx(ctx context.Context, fn func(*Queries) error) erro
 		return err
 	}
 
+	defer tx.Rollback(ctx)
 	q := New(tx)
-	err = fn(q)
+	qtx := q.WithTx(tx)
+	err = fn(qtx)
 	if err != nil {
-		if rbErr := tx.Rollback(ctx); rbErr != nil {
-			return fmt.Errorf("tx err: %v, rb err: %v", err, rbErr)
-		}
 		return err
 	}
 
-	return tx.Commit(ctx)
+	err = tx.Commit(ctx)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

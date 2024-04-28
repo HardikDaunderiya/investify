@@ -7,3 +7,7 @@ INSERT INTO
     )
 VALUES
     ($1, $2, $3) RETURNING *;
+
+-- name: GetOwnerByUserId :one
+SELECT
+    * FROM bk_owner where owner_user_id = $1 LIMIT 1;

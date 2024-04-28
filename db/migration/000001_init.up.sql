@@ -24,9 +24,7 @@ CREATE TABLE
         "token_id" BIGSERIAL PRIMARY KEY,
         "token_value" UUID NOT NULL,
         "token_user_id" BIGINT NOT NULL REFERENCES "bk_users" ("user_id"),
-        "token_expiry_date" TIMESTAMP
-        WITH
-            TIME ZONE
+        "token_expiry_date" TIMESTAMPTZ
     );
 
 CREATE UNIQUE INDEX "user_email_index" ON "bk_users" ("user_email");

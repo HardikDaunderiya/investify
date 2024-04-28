@@ -26,10 +26,9 @@ type BkBusiness struct {
 	BusinessEmail          string           `json:"business_email"`
 	BusinessContact        string           `json:"business_contact"`
 	BusinessName           string           `json:"business_name"`
-	BusinessAddressID      pgtype.Int8      `json:"business_address_id"`
-	BusinessUserID         pgtype.Int8      `json:"business_user_id"`
+	BusinessAddressID      int64            `json:"business_address_id"`
 	BusinessRatings        pgtype.Numeric   `json:"business_ratings"`
-	BusinessMinAmount      pgtype.Numeric   `json:"business_minAmount"`
+	BusinessMinamount      pgtype.Numeric   `json:"business_minamount"`
 	CreatedAt              pgtype.Timestamp `json:"created_at"`
 	UpdatedAt              pgtype.Timestamp `json:"updated_at"`
 	DeletedAt              pgtype.Timestamp `json:"deleted_at"`

@@ -9,6 +9,6 @@ type OwnerServiceImpl struct {
 	store db.Store
 }
 
-func NewOwnerService(store db.Store) *OwnerServiceImpl {
+func NewOwnerService(store db.Store) OwnerService {
 	return &OwnerServiceImpl{store: store}
 }

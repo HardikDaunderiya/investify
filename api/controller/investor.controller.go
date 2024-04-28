@@ -2,7 +2,11 @@ package controller
 
 import (
 	"investify/api/services"
+	"investify/api/types"
 	db "investify/db/sqlc"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 type InvestorController struct {
@@ -12,4 +16,29 @@ type InvestorController struct {
 
 func NewInvestorController(store db.Store, InvestorSrv services.InvestorService) *InvestorController {
 	return &InvestorController{store: store, investorSrv: InvestorSrv}
+}
+
+func (i *InvestorController) GetBusinessFeedController(ctx *gin.Context) {
+
+	respObject, err := i.investorSrv.GetBusinessFeedService(ctx)
+	// Delegate creation logic to user service
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, types.GenerateErrorResponse(err, http.StatusInternalServerError, "position 3"))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, types.GenerateResponse(respObject, http.StatusOK))
+
+}
+func (i *InvestorController) GetInvestorByIdController(ctx *gin.Context) {
+
+	respObject, err := i.investorSrv.GetInvestorByIdService(ctx)
+	// Delegate creation logic to user service
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, types.GenerateErrorResponse(err, http.StatusInternalServerError, "position 3"))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, types.GenerateResponse(respObject, http.StatusOK))
+
 }

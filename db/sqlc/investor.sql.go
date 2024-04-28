@@ -42,3 +42,76 @@ func (q *Queries) CreateInvestor(ctx context.Context, arg CreateInvestorParams) 
 	)
 	return i, err
 }
+
+const getInvestorById = `-- name: GetInvestorById :one
+SELECT
+    investor_id, investor_name, investor_user_id, investor_address_id, created_at, updated_at, deleted_at FROM bk_investor where investor_id = $1
+`
+
+func (q *Queries) GetInvestorById(ctx context.Context, investorID int64) (BkInvestor, error) {
+	row := q.db.QueryRow(ctx, getInvestorById, investorID)
+	var i BkInvestor
+	err := row.Scan(
+		&i.InvestorID,
+		&i.InvestorName,
+		&i.InvestorUserID,
+		&i.InvestorAddressID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
+}
+
+const getInvestorByUserId = `-- name: GetInvestorByUserId :one
+SELECT
+    investor_id, investor_name, investor_user_id, investor_address_id, created_at, updated_at, deleted_at FROM bk_investor where investor_user_id = $1
+`
+
+func (q *Queries) GetInvestorByUserId(ctx context.Context, investorUserID int64) (BkInvestor, error) {
+	row := q.db.QueryRow(ctx, getInvestorByUserId, investorUserID)
+	var i BkInvestor
+	err := row.Scan(
+		&i.InvestorID,
+		&i.InvestorName,
+		&i.InvestorUserID,
+		&i.InvestorAddressID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
+}
+
+const getInvestorFeed = `-- name: GetInvestorFeed :many
+SELECT
+    investor_id, investor_name, investor_user_id, investor_address_id, created_at, updated_at, deleted_at FROM bk_investor LIMIT 10
+`
+
+func (q *Queries) GetInvestorFeed(ctx context.Context) ([]BkInvestor, error) {
+	rows, err := q.db.Query(ctx, getInvestorFeed)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []BkInvestor{}
+	for rows.Next() {
+		var i BkInvestor
+		if err := rows.Scan(
+			&i.InvestorID,
+			&i.InvestorName,
+			&i.InvestorUserID,
+			&i.InvestorAddressID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.DeletedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

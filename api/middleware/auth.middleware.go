@@ -8,7 +8,7 @@ import (
 )
 
 // check for valid admin token
-func JWTRestaurantAuth() gin.HandlerFunc {
+func JWTOwnerAuth() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		err := util.ValidateJWT(context)
 		if err != nil {
@@ -27,7 +27,7 @@ func JWTRestaurantAuth() gin.HandlerFunc {
 }
 
 // check for valid customer token
-func JWTAuthCustomer() gin.HandlerFunc {
+func JWTAuthInvestor() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		err := util.ValidateJWT(context)
 		if err != nil {

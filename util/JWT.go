@@ -72,10 +72,10 @@ func ValidateInvestorRoleJWT(context *gin.Context) error {
 
 //
 
-func CurrentUser(context *gin.Context, store db.Store) db.BkUser {
+func CurrentUser(context *gin.Context, store db.Store) (db.BkUser, error) {
 	err := ValidateJWT(context)
 	if err != nil {
-		return db.BkUser{}
+		return db.BkUser{}, err
 	}
 	token, _ := ExtractJWT(context)
 	claims, _ := token.Claims.(jwt.MapClaims)
@@ -83,9 +83,9 @@ func CurrentUser(context *gin.Context, store db.Store) db.BkUser {
 
 	user, err := store.GetUserById(context, int64(userId))
 	if err != nil {
-		return db.BkUser{}
+		return db.BkUser{}, err
 	}
-	return user
+	return user, nil
 }
 func ExtractJWT(context *gin.Context) (*jwt.Token, error) {
 	tokenString := ExtractFromRequest(context)
