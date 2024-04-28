@@ -1,17 +1,22 @@
 DB_URL=postgresql://root:secret@localhost:5432/investify?sslmode=disable
 #migrate -path PATH_TO_YOUR_MIGRATIONS -database YOUR_DATABASE_URL force VERSION
 
-migrateup:
-	migrate -path db/migration -database "$(DB_URL)" -verbose up
+postgres:
+	docker run --name postgres12 -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:12-alpines
 
-migrateup1:
-	migrate -path db/migration -database "$(DB_URL)" -verbose up 1
+migrateup:
+	go run cmd/migrations/init/init.sql.go up
+
+
+
 
 migratedown:
-	migrate -path db/migration -database "$(DB_URL)" -verbose down
+	go run cmd/migrations/init/init.sql.go down
 
-migratedown1:
-	migrate -path db/migration -database "$(DB_URL)" -verbose down 1
 
 sqlc:
 	sqlc generate
+
+
+server:
+	go run cmd/app/main.go
