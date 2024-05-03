@@ -25,14 +25,15 @@ func (b *BusinessController) CreateBusiness(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, types.GenerateErrorResponse(err, http.StatusBadRequest, "position 1"))
 		return
 	}
-	respObject, err := b.businessSrv.CreateBusinessService(ctx, req)
+	// fmt.Println(reflect.TypeOf(req.AdressDetails))
+	_, err = b.businessSrv.CreateBusinessService(ctx, req)
 	// Delegate creation logic to user service
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, types.GenerateErrorResponse(err, http.StatusInternalServerError, "position 3"))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, types.GenerateResponse(respObject, http.StatusOK))
+	ctx.JSON(http.StatusOK, types.GenerateResponse(nil, "Business Created Sucessfully"))
 
 }
 func (b *BusinessController) GetBusinessByIdController(ctx *gin.Context) {
@@ -44,20 +45,20 @@ func (b *BusinessController) GetBusinessByIdController(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, types.GenerateResponse(respObject, http.StatusOK))
+	ctx.JSON(http.StatusOK, types.GenerateResponse(respObject, "Business fetched"))
 
 }
 
 func (b *BusinessController) GetBusinessByOwnerController(ctx *gin.Context) {
 
 	respObject, err := b.businessSrv.GetBusinessServiceByOwner(ctx)
-	// Delegate creation logic to user service
+	// Delegate cre	ation logic to user service
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, types.GenerateErrorResponse(err, http.StatusInternalServerError, "position 3"))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, types.GenerateResponse(respObject, http.StatusOK))
+	ctx.JSON(http.StatusOK, types.GenerateResponse(respObject, "Business fetched"))
 
 }
 func (b *BusinessController) GetInvestorFeedController(ctx *gin.Context) {
@@ -69,6 +70,6 @@ func (b *BusinessController) GetInvestorFeedController(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, types.GenerateResponse(respObject, http.StatusOK))
+	ctx.JSON(http.StatusOK, types.GenerateResponse(respObject, "Business fetched"))
 
 }

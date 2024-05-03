@@ -9,3 +9,7 @@
 - forgot passoword route also should be implemented and the otp should be sent to email or mobile number for verification and a rate limiter should be applied for this route
 - logic for feed of investor and should be implemented in more logical (for now just fetching first 10 items)
 - - appkey and data
+  
+  
+### Meet Notes
+- 

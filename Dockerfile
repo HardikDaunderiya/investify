@@ -1,7 +1,17 @@
-FROM golang:1.22-alpine3.19 AS builder
+FROM golang:1.22.2-alpine3.19 AS builder
 WORKDIR /
 
-COPY . .
-RUN go build -o main main.go
+COPY go.mod go.sum ./
 
-FROM alpine:3.19
+COPY . .
+RUN apk add --no-cache git
+
+RUN go mod download
+
+RUN go build -o cmd/app/main .
+
+EXPOSE 8000
+
+CMD [ "./main" ]
+
+

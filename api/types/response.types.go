@@ -3,22 +3,21 @@ package types
 import db "investify/db/sqlc"
 
 type BaseHttpResponse struct {
-	Status     string      `json:"status"`
-	Data       interface{} `json:"data"`
-	StatusCode int         `json:"statusCode"`
+	Status  string      `json:"status"`
+	Data    interface{} `json:"data"`
+	Message string      `json:message`
 }
 type BaseErrorResponse struct {
-	Status     string      `json:"status"`
-	Message    interface{} `json:"error"`
-	StatusCode int         `json:"statusCode"`
-	Extra      string      `json:"extra"`
+	Status  string      `json:"status"`
+	Message interface{} `json:"error"`
+	Extra   string      `json:"extra"`
 }
 
-func GenerateResponse(data interface{}, statusCode int) *BaseHttpResponse {
+func GenerateResponse(data interface{}, message string) *BaseHttpResponse {
 	return &BaseHttpResponse{
-		Status:     "success",
-		StatusCode: statusCode,
-		Data:       data,
+		Status:  "success",
+		Data:    data,
+		Message: message,
 	}
 }
 
@@ -27,10 +26,9 @@ func GenerateErrorResponse(err error, statusCode int, extra string) *BaseErrorRe
 		extra = "" // Set extra to an empty string if it's not provided
 	}
 	return &BaseErrorResponse{
-		Status:     "error",
-		StatusCode: statusCode,
-		Message:    err.Error(),
-		Extra:      extra,
+		Status:  "error",
+		Message: err.Error(),
+		Extra:   extra,
 	}
 }
 

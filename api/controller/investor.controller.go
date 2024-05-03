@@ -27,7 +27,7 @@ func (i *InvestorController) GetBusinessFeedController(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, types.GenerateResponse(respObject, http.StatusOK))
+	ctx.JSON(http.StatusOK, types.GenerateResponse(respObject, "Business feed"))
 
 }
 func (i *InvestorController) GetInvestorByIdController(ctx *gin.Context) {
@@ -39,6 +39,6 @@ func (i *InvestorController) GetInvestorByIdController(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, types.GenerateResponse(respObject, http.StatusOK))
+	ctx.JSON(http.StatusOK, types.GenerateResponse(respObject, "Investor fetched"))
 
 }

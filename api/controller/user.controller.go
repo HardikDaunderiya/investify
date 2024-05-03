@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"investify/api/services"
 	"investify/api/types"
 	db "investify/db/sqlc"
@@ -21,8 +22,6 @@ func NewUserController(store db.Store, userSrv services.UserService) *UserContro
 	return &UserController{store: store, userSrv: userSrv}
 }
 
-// var userService ser
-
 func (u *UserController) Test(c *gin.Context) {
 	log.Print("i am in controllers")
 	c.JSON(http.StatusAccepted, gin.H{"message": "Everything ok"})
@@ -38,7 +37,6 @@ func (u *UserController) Test(c *gin.Context) {
 //commit the transaction
 
 func (u *UserController) CreateUser(ctx *gin.Context) {
-
 	var req types.CreateUserRequest
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
@@ -46,13 +44,13 @@ func (u *UserController) CreateUser(ctx *gin.Context) {
 		return
 	}
 
-	respObject, err := u.userSrv.CreateUserService(ctx, req) // Delegate creation logic to user service
+	_, err = u.userSrv.CreateUserService(ctx, req) // Delegate creation logic to user service
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, types.GenerateErrorResponse(err, http.StatusInternalServerError, "position 3"))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, types.GenerateResponse(respObject, http.StatusOK))
+	ctx.JSON(http.StatusOK, types.GenerateResponse(nil, "Sucesfull Signup"))
 
 }
 
@@ -64,11 +62,11 @@ func (u *UserController) LoginUser(ctx *gin.Context) {
 		return
 	}
 
-	respObject, err := u.userSrv.LoginUserService(ctx, req) // Delegate creation logic to user service
+	reqObj, err := u.userSrv.LoginUserService(ctx, req) // Delegate creation logic to user service
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, types.GenerateErrorResponse(err, http.StatusInternalServerError, "position 3"))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, types.GenerateResponse(respObject, http.StatusOK))
+	ctx.JSON(http.StatusOK, types.GenerateResponse(reqObj, "Login Sucessfull"))
 }

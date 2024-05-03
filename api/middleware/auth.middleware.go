@@ -18,7 +18,7 @@ func JWTOwnerAuth() gin.HandlerFunc {
 		}
 		error := util.ValidateOwnerRoleJWT(context)
 		if error != nil {
-			context.JSON(http.StatusUnauthorized, gin.H{"error": "Only Restaurunt is allowed to perform this action"})
+			context.JSON(http.StatusUnauthorized, gin.H{"error": "Only Business Owner is allowed to perform this action"})
 			context.Abort()
 			return
 		}
@@ -30,6 +30,7 @@ func JWTOwnerAuth() gin.HandlerFunc {
 func JWTAuthInvestor() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		err := util.ValidateJWT(context)
+
 		if err != nil {
 			context.JSON(http.StatusUnauthorized, gin.H{"error": "Authentication required"})
 			context.Abort()
@@ -37,7 +38,7 @@ func JWTAuthInvestor() gin.HandlerFunc {
 		}
 		error := util.ValidateInvestorRoleJWT(context)
 		if error != nil {
-			context.JSON(http.StatusUnauthorized, gin.H{"error": "Only  Customers are allowed to perform this action"})
+			context.JSON(http.StatusUnauthorized, gin.H{"error": "Only  Investors are allowed to perform this action"})
 			context.Abort()
 			return
 		}

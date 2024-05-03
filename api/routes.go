@@ -36,6 +36,7 @@ func SetupRouter(server *Server) *gin.Engine {
 		// ownerController := controller.NewOwnerController(server.store, ownerService)
 		investorController := controller.NewInvestorController(server.store, investorService)
 		businessController := controller.NewBusinessController(server.store, businessService)
+		router.GET("/", userController.Test)
 
 		// Define routes for users
 		users := v1.Group("/users")

@@ -101,6 +101,7 @@ func ExtractJWT(context *gin.Context) (*jwt.Token, error) {
 
 func ExtractFromRequest(context *gin.Context) string {
 	bearerToken := context.Request.Header.Get("Authorization")
+	//will see if i have to extract from the cookie in the future
 	splitToken := strings.Split(bearerToken, " ")
 	if len(splitToken) == 2 {
 		return splitToken[1]
