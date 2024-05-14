@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"investify/api/services"
 	"investify/api/types"
 	db "investify/db/sqlc"

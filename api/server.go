@@ -1,6 +1,7 @@
 package api
 
 import (
+	"investify/api/middleware"
 	"investify/config"
 	"investify/db/adapters"
 	db "investify/db/sqlc"
@@ -25,6 +26,7 @@ func (s *Server) Start(address string) error {
 func NewHTTPServer() *Server {
 	router := gin.Default()
 
+	router.Use(middleware.CORSMiddleware())
 	pgConn := adapters.InitDb(config.EnvVars.DBSource)
 
 	// if pgConn != nil {
