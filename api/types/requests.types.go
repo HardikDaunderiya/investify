@@ -3,7 +3,7 @@ package types
 type CreateUserRequest struct {
 	ProfileDetails ProfileInfo
 	UserDetails    UserType
-	AdressDetails  AddressType
+	AddressDetails AddressType
 }
 
 type LoginUserRequest struct {
@@ -15,6 +15,7 @@ type CreateBusinessRequest struct {
 	BusinessDetails BusinessType
 	AdressDetails   AddressType
 }
+
 // type Request struct {
 // 	Appkey int               `json:"appkey"`
 // 	Data   CreateUserRequest `json:"data"`

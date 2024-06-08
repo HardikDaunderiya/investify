@@ -36,11 +36,11 @@ func (u *UserServiceImpl) CreateUserService(ctx *gin.Context, req types.CreateUs
 
 	err = u.store.ExecTx(ctx, func(tx *db.Queries) error {
 		address, err := tx.CreateAddress(ctx, db.CreateAddressParams{
-			AddressStreet:  req.AdressDetails.AddressStreet,
-			AddressCity:    req.AdressDetails.AddressCity,
-			AddressState:   req.AdressDetails.AddressState,
-			AddressCountry: req.AdressDetails.AddressCountry,
-			AddressZipcode: req.AdressDetails.AddressZipcode,
+			AddressStreet:  req.AddressDetails.AddressStreet,
+			AddressCity:    req.AddressDetails.AddressCity,
+			AddressState:   req.AddressDetails.AddressState,
+			AddressCountry: req.AddressDetails.AddressCountry,
+			AddressZipcode: req.AddressDetails.AddressZipcode,
 		})
 		if err != nil {
 			return err
