@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"investify/api/types"
+	"investify/api/types/errors"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -26,10 +27,9 @@ func NewUserService(store db.Store) UserService {
 }
 
 func (u *UserServiceImpl) CreateUserService(ctx *gin.Context, req types.CreateUserRequest) (types.CreateUserResponse, error) {
-	// Implement the logic here
 	hashedPassword, err := util.HashPassword(req.UserDetails.UserPassword)
 	if err != nil {
-		return types.CreateUserResponse{}, err
+		return types.CreateUserResponse{}, errors.ErrHashPassword
 	}
 
 	var respObject types.CreateUserResponse
@@ -43,15 +43,16 @@ func (u *UserServiceImpl) CreateUserService(ctx *gin.Context, req types.CreateUs
 			AddressZipcode: req.AddressDetails.AddressZipcode,
 		})
 		if err != nil {
-			return err
+			return errors.ErrCreateAddress
 		}
+
 		user, err := tx.CreateUser(ctx, db.CreateUserParams{
 			UserEmail:    req.UserDetails.UserEmail,
 			UserPassword: hashedPassword,
 			UsersRoleID:  req.UserDetails.UserRoleID,
 		})
 		if err != nil {
-			return err
+			return errors.ErrCreateUser
 		}
 
 		if user.UsersRoleID == 1 {
@@ -61,7 +62,7 @@ func (u *UserServiceImpl) CreateUserService(ctx *gin.Context, req types.CreateUs
 				OwnerUserID:    user.UserID,
 			})
 			if err != nil {
-				return err
+				return errors.ErrCreateOwner
 			}
 			respObject.ProfileInfo = owner
 
@@ -72,15 +73,15 @@ func (u *UserServiceImpl) CreateUserService(ctx *gin.Context, req types.CreateUs
 				InvestorUserID:    user.UserID,
 			})
 			if err != nil {
-				return err
+				return errors.ErrCreateInvestor
 			}
 			respObject.ProfileInfo = investor
 		}
+
 		respObject.UserInfo = user
 		respObject.AddressInfo = address
 
 		return nil // Commit transaction
-
 	})
 
 	if err != nil {
@@ -92,31 +93,38 @@ func (u *UserServiceImpl) CreateUserService(ctx *gin.Context, req types.CreateUs
 }
 
 func (u *UserServiceImpl) LoginUserService(ctx *gin.Context, req types.LoginUserRequest) (types.LoginUserResponse, error) {
-	//check user
-	//verify password
-	//generate jwt token
-	//generate refresh token
-	//store refresh token in db
-	//return jwt token and refresh token
-
-	var LoginUserResponse types.LoginUserResponse
+	var loginUserResponse types.LoginUserResponse
 
 	user, err := u.store.GetUserByEmail(ctx, req.UserEmail)
 	if err != nil {
-		return types.LoginUserResponse{}, err
+		return types.LoginUserResponse{}, errors.ErrUserNotFound
+	}
+	loginUserResponse.Role = int(user.UsersRoleID)
+
+	if user.UsersRoleID == 2 {
+		profile, err := u.store.GetInvestorByUserId(ctx, user.UserID)
+		if err != nil {
+			return types.LoginUserResponse{}, errors.ErrFailedProfileRetrieval
+		}
+		loginUserResponse.UserProfileName = profile.InvestorName.String
+	} else {
+		profile, err := u.store.GetOwnerByUserId(ctx, user.UserID)
+		if err != nil {
+			return types.LoginUserResponse{}, errors.ErrFailedProfileRetrieval
+		}
+		loginUserResponse.UserProfileName = profile.OwnerName.String
 	}
 
 	err = util.CheckPassword(req.UserPassword, user.UserPassword)
 	if err != nil {
-		return types.LoginUserResponse{}, err
+		return types.LoginUserResponse{}, errors.ErrIncorrectPassword
 	}
 
 	token, err := util.GenerateJWT(user)
 	if err != nil {
-		return types.LoginUserResponse{}, err
-
+		return types.LoginUserResponse{}, errors.ErrFailedTokenCreation
 	}
-	LoginUserResponse.AccessToken = token
+	loginUserResponse.AccessToken = token
 	uuidToken := uuid.New()
 
 	refreshToken, err := u.store.CreateToken(ctx, db.CreateTokenParams{
@@ -126,8 +134,18 @@ func (u *UserServiceImpl) LoginUserService(ctx *gin.Context, req types.LoginUser
 	})
 
 	if err != nil {
-		return types.LoginUserResponse{}, err
+		return types.LoginUserResponse{}, errors.ErrFailedTokenCreation
 	}
-	LoginUserResponse.RefreshToken = refreshToken.TokenValue.String()
-	return LoginUserResponse, nil
+	loginUserResponse.RefreshToken = refreshToken.TokenValue.String()
+	return loginUserResponse, nil
+}
+
+func (u *UserServiceImpl) LogOutUserService(ctx *gin.Context) error {
+
+	//maintain a map store the invalidated token
+	//protect the map with the mutex
+	//invilidate the aceess token
+
+	return nil
+
 }

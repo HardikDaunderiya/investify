@@ -47,6 +47,7 @@ func SetupRouter(server *Server) *gin.Engine {
 			users.POST("/signup", userController.CreateUser)
 			users.POST("/login", userController.LoginUser)
 			users.GET("/test", userController.Test)
+			users.POST("/logout", userController.LogOut)
 		}
 		// owner := v1.Group("/owner")
 		// {
@@ -57,6 +58,7 @@ func SetupRouter(server *Server) *gin.Engine {
 			investor.Use(middleware.JWTAuthInvestor())
 			investor.GET("/feed", investorController.GetBusinessFeedController)
 			investor.GET("/:id", investorController.GetInvestorByIdController)
+			investor.GET("/business/:id", businessController.GetBusinessByIdController)
 
 		}
 		business := v1.Group("/business")

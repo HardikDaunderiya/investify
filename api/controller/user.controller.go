@@ -3,6 +3,7 @@ package controller
 import (
 	"investify/api/services"
 	"investify/api/types"
+	"investify/api/types/errors"
 	db "investify/db/sqlc"
 	"log"
 	"net/http"
@@ -39,33 +40,42 @@ func (u *UserController) CreateUser(ctx *gin.Context) {
 	var req types.CreateUserRequest
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, types.GenerateErrorResponse(err, http.StatusBadRequest, "position 1"))
+		ctx.JSON(http.StatusBadRequest, errors.GenerateErrorResponse(errors.ErrParsingRequest, http.StatusBadRequest, "position 1"))
 		return
 	}
 
 	_, err = u.userSrv.CreateUserService(ctx, req) // Delegate creation logic to user service
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, types.GenerateErrorResponse(err, http.StatusInternalServerError, "position 3"))
+		ctx.JSON(http.StatusInternalServerError, errors.GenerateErrorResponse(err, http.StatusInternalServerError, "position 3"))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, types.GenerateResponse(nil, "Sucesfull Signup"))
-
+	ctx.JSON(http.StatusOK, types.GenerateResponse(nil, "Successful Signup"))
 }
 
 func (u *UserController) LoginUser(ctx *gin.Context) {
 	var req types.LoginUserRequest
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, types.GenerateErrorResponse(err, http.StatusBadRequest, "position 1"))
+		ctx.JSON(http.StatusBadRequest, errors.GenerateErrorResponse(errors.ErrParsingRequest, http.StatusBadRequest, ""))
 		return
 	}
 
-	reqObj, err := u.userSrv.LoginUserService(ctx, req) // Delegate creation logic to user service
+	reqObj, err := u.userSrv.LoginUserService(ctx, req)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, types.GenerateErrorResponse(err, http.StatusInternalServerError, "position 3"))
+		ctx.JSON(http.StatusUnauthorized, errors.GenerateErrorResponse(err, http.StatusUnauthorized, ""))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, types.GenerateResponse(reqObj, "Login Sucessfull"))
+	ctx.JSON(http.StatusOK, types.GenerateResponse(reqObj, "Login Successful"))
+}
+func (u *UserController) LogOut(ctx *gin.Context) {
+
+	// err = u.userSrv.LogOutUserService(ctx)
+	// if err != nil {
+	// 	ctx.JSON(http.StatusUnauthorized, errors.GenerateErrorResponse(err, http.StatusUnauthorized, ""))
+	// 	return
+	// }
+
+	ctx.JSON(http.StatusOK, types.GenerateResponse(nil, "Logout Successful"))
 }

@@ -1,16 +1,13 @@
 package types
 
-import db "investify/db/sqlc"
+import (
+	db "investify/db/sqlc"
+)
 
 type BaseHttpResponse struct {
 	Status  string      `json:"status"`
 	Data    interface{} `json:"data"`
-	Message string      `json:message`
-}
-type BaseErrorResponse struct {
-	Status  string      `json:"status"`
-	Message interface{} `json:"error"`
-	Extra   string      `json:"extra"`
+	Message string      `json:"message"`
 }
 
 func GenerateResponse(data interface{}, message string) *BaseHttpResponse {
@@ -21,25 +18,16 @@ func GenerateResponse(data interface{}, message string) *BaseHttpResponse {
 	}
 }
 
-func GenerateErrorResponse(err error, statusCode int, extra string) *BaseErrorResponse {
-	if extra == "" {
-		extra = "" // Set extra to an empty string if it's not provided
-	}
-	return &BaseErrorResponse{
-		Status:  "error",
-		Message: err.Error(),
-		Extra:   extra,
-	}
-}
-
 type CreateUserResponse struct {
 	UserInfo    db.BkUser    `json:"user_info"`
 	AddressInfo db.BkAddress `json:"address_info"`
 	ProfileInfo interface{}  `json:"profile_info"`
 }
 type LoginUserResponse struct {
-	AccessToken  string `json:"access_token`
-	RefreshToken string `json:"refresh_token`
+	UserProfileName string `json:user_profile_name`
+	Role            int    `json: user_role_id`
+	AccessToken     string `json:"access_token`
+	RefreshToken    string `json:"refresh_token`
 }
 
 type CreateBusinessResponse struct {
@@ -49,6 +37,7 @@ type CreateBusinessResponse struct {
 
 type GetBusinessResponse struct {
 	BusinessInfo db.BkBusiness `json:"business_info"`
+	AddressInfo  db.BkAddress  `json:"address_info"`
 }
 type GetBusinessFeedResponse struct {
 	BusinessInfo []db.BkBusiness `json:"business_info"`

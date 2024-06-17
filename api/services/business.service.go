@@ -1,7 +1,9 @@
 package services
 
 import (
+	"database/sql"
 	"investify/api/types"
+	"investify/api/types/errors"
 	db "investify/db/sqlc"
 	"investify/util"
 	"log"
@@ -39,15 +41,14 @@ func (b *BusinessServiceImpl) CreateBusinessService(ctx *gin.Context, req types.
 	err := b.store.ExecTx(ctx, func(tx *db.Queries) error {
 
 		user, err := util.CurrentUser(ctx, b.store)
-
 		if err != nil {
-			return err
+			return errors.ErrUserNotFound
 		}
 
 		owner, err := tx.GetOwnerByUserId(ctx, user.UserID)
 
 		if err != nil {
-			return err
+			return errors.ErrCreateOwner
 		}
 
 		address, err := tx.CreateAddress(ctx, db.CreateAddressParams{
@@ -58,7 +59,7 @@ func (b *BusinessServiceImpl) CreateBusinessService(ctx *gin.Context, req types.
 			AddressZipcode: req.AdressDetails.AddressZipcode,
 		})
 		if err != nil {
-			return err
+			return errors.ErrCreateAddress
 		}
 		respObject.AddressInfo = address
 		business, err := tx.CreateBusiness(ctx, db.CreateBusinessParams{
@@ -74,7 +75,7 @@ func (b *BusinessServiceImpl) CreateBusinessService(ctx *gin.Context, req types.
 		})
 
 		if err != nil {
-			return err
+			return errors.ErrCreateBusiness
 		}
 		respObject.BusinessInfo = business
 
@@ -94,13 +95,25 @@ func (b *BusinessServiceImpl) GetBusinessService(ctx *gin.Context) (types.GetBus
 	var respObject types.GetBusinessResponse
 	id, err := strconv.ParseInt(idstr, 10, 64)
 	if err != nil {
-		return types.GetBusinessResponse{}, err
+		return types.GetBusinessResponse{}, errors.ErrInvalidID
 	}
 	business, err := b.store.GetBusinessById(ctx, id)
 	if err != nil {
-		return types.GetBusinessResponse{}, err
+		if err == sql.ErrNoRows {
+			return types.GetBusinessResponse{}, errors.ErrGetBusiness
+		}
+		return types.GetBusinessResponse{}, errors.ErrGetBusiness
 	}
+	address, err := b.store.GetAddressById(ctx, business.BusinessAddressID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return types.GetBusinessResponse{}, errors.ErrGetBusiness
+		}
+		return types.GetBusinessResponse{}, errors.ErrGetBusiness
+	}
+	// b.store.get
 	respObject.BusinessInfo = business
+	respObject.AddressInfo = address
 	return respObject, nil
 }
 
@@ -108,17 +121,17 @@ func (b *BusinessServiceImpl) GetBusinessService(ctx *gin.Context) (types.GetBus
 func (b *BusinessServiceImpl) GetBusinessServiceByOwner(ctx *gin.Context) (types.GetBusinessFeedResponse, error) {
 	user, err := util.CurrentUser(ctx, b.store)
 	if err != nil {
-		return types.GetBusinessFeedResponse{}, err
+		return types.GetBusinessFeedResponse{}, errors.ErrUserNotFound
 	}
 	owner, err := b.store.GetOwnerByUserId(ctx, user.UserID)
 	if err != nil {
-		return types.GetBusinessFeedResponse{}, err
-
+		return types.GetBusinessFeedResponse{}, errors.ErrGetBusinessByOwner
 	}
+
 	var respObject types.GetBusinessFeedResponse
 	business, err := b.store.GetBusinessByOwnerId(ctx, owner.OwnerID)
 	if err != nil {
-		return types.GetBusinessFeedResponse{}, err
+		return types.GetBusinessFeedResponse{}, errors.ErrGetBusinessByOwner
 	}
 	for _, elem := range business {
 		respObject.BusinessInfo = append(respObject.BusinessInfo, elem)
@@ -130,12 +143,11 @@ func (b *BusinessServiceImpl) GetInvestorFeedService(ctx *gin.Context) (types.Ge
 	var respObject types.GetInvestorFeedResponse
 	investors, err := b.store.GetInvestorFeed(ctx)
 	if err != nil {
-		return types.GetInvestorFeedResponse{}, err
+		return types.GetInvestorFeedResponse{}, errors.ErrGetInvestorFeed
 	}
 	//filter what to send in the feed
 	for _, elem := range investors {
 		respObject.InvestorInfo = append(respObject.InvestorInfo, elem)
 	}
-
 	return respObject, nil
 }

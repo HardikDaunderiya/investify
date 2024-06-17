@@ -51,3 +51,22 @@ func (q *Queries) CreateAddress(ctx context.Context, arg CreateAddressParams) (B
 	)
 	return i, err
 }
+
+const getAddressById = `-- name: GetAddressById :one
+SELECT
+    address_id, address_street, address_city, address_state, address_country, address_zipcode FROM bk_address where address_id  = $1
+`
+
+func (q *Queries) GetAddressById(ctx context.Context, addressID int64) (BkAddress, error) {
+	row := q.db.QueryRow(ctx, getAddressById, addressID)
+	var i BkAddress
+	err := row.Scan(
+		&i.AddressID,
+		&i.AddressStreet,
+		&i.AddressCity,
+		&i.AddressState,
+		&i.AddressCountry,
+		&i.AddressZipcode,
+	)
+	return i, err
+}

@@ -9,3 +9,8 @@ INSERT INTO
     )
 VALUES
     ($1, $2, $3, $4, $5) RETURNING *;
+
+
+-- name: GetAddressById :one
+SELECT
+    * FROM bk_address where address_id  = $1;

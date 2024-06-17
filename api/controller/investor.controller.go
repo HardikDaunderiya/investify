@@ -3,6 +3,7 @@ package controller
 import (
 	"investify/api/services"
 	"investify/api/types"
+	"investify/api/types/errors"
 	db "investify/db/sqlc"
 	"net/http"
 
@@ -19,26 +20,23 @@ func NewInvestorController(store db.Store, InvestorSrv services.InvestorService)
 }
 
 func (i *InvestorController) GetBusinessFeedController(ctx *gin.Context) {
-
 	respObject, err := i.investorSrv.GetBusinessFeedService(ctx)
 	// Delegate creation logic to user service
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, types.GenerateErrorResponse(err, http.StatusInternalServerError, "position 3"))
+		ctx.JSON(http.StatusInternalServerError, errors.GenerateErrorResponse(err, http.StatusInternalServerError, "position 3"))
 		return
 	}
 
 	ctx.JSON(http.StatusOK, types.GenerateResponse(respObject, "Business feed"))
-
 }
-func (i *InvestorController) GetInvestorByIdController(ctx *gin.Context) {
 
+func (i *InvestorController) GetInvestorByIdController(ctx *gin.Context) {
 	respObject, err := i.investorSrv.GetInvestorByIdService(ctx)
 	// Delegate creation logic to user service
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, types.GenerateErrorResponse(err, http.StatusInternalServerError, "position 3"))
+		ctx.JSON(http.StatusInternalServerError, errors.GenerateErrorResponse(err, http.StatusInternalServerError, "position 3"))
 		return
 	}
 
 	ctx.JSON(http.StatusOK, types.GenerateResponse(respObject, "Investor fetched"))
-
 }

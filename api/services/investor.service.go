@@ -1,7 +1,9 @@
 package services
 
 import (
+	"database/sql"
 	"investify/api/types"
+	"investify/api/types/errors"
 	db "investify/db/sqlc"
 	"log"
 	"strconv"
@@ -29,25 +31,27 @@ func (i *InvestorServiceImpl) GetInvestorByIdService(ctx *gin.Context) (types.Ge
 	var respObject types.GetInvestorResponse
 	id, err := strconv.ParseInt(idstr, 10, 64)
 	if err != nil {
-		return types.GetInvestorResponse{}, err
+		return types.GetInvestorResponse{}, errors.ErrInvalidID
 	}
 	investor, err := i.store.GetInvestorById(ctx, id)
 	if err != nil {
-		return types.GetInvestorResponse{}, err
+		if err == sql.ErrNoRows {
+			return types.GetInvestorResponse{}, errors.ErrInvestorNotFound
+		}
+		return types.GetInvestorResponse{}, errors.ErrInvestorNotFound
 	}
 	respObject.InvestorInfo = investor
 
 	return respObject, nil
-
 }
 
 func (i *InvestorServiceImpl) GetBusinessFeedService(ctx *gin.Context) (types.GetBusinessFeedResponse, error) {
 	var respObject types.GetBusinessFeedResponse
 	business, err := i.store.GetBusinessFeed(ctx)
 	if err != nil {
-		return types.GetBusinessFeedResponse{}, err
+		return types.GetBusinessFeedResponse{}, errors.ErrBusinessFeed
 	}
-	//filter what to send in the feed
+	// filter what to send in the feed
 	for _, elem := range business {
 		respObject.BusinessInfo = append(respObject.BusinessInfo, elem)
 	}

@@ -20,7 +20,7 @@ import (
 var privateKey []byte = []byte("cEwHkXr2u5x8A/B?D(G+KbPeShVmYq3t6v9y$B&E)H@McQfTjWnZr4u7x!A%C*F-JaN")
 
 func GenerateJWT(user db.BkUser) (string, error) {
-	tokenTTL, _ := strconv.Atoi("3600")
+	tokenTTL, _ := strconv.Atoi("36000")
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id":   user.UserID,
 		"user_role": user.UsersRoleID,

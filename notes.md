@@ -12,4 +12,6 @@
   
   
 ### Meet Notes
-- 
+
+- Min__FUNDING -->Expected  funding 
+- signout api Logic should be written

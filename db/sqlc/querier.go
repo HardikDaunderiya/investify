@@ -15,6 +15,7 @@ type Querier interface {
 	CreateOwner(ctx context.Context, arg CreateOwnerParams) (BkOwner, error)
 	CreateToken(ctx context.Context, arg CreateTokenParams) (BkToken, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (BkUser, error)
+	GetAddressById(ctx context.Context, addressID int64) (BkAddress, error)
 	GetBusinessById(ctx context.Context, businessID int64) (BkBusiness, error)
 	GetBusinessByOwnerId(ctx context.Context, businessOwnerID int64) ([]BkBusiness, error)
 	GetBusinessFeed(ctx context.Context) ([]BkBusiness, error)
